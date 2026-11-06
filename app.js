@@ -7,14 +7,15 @@
   // ---------------------------------------------------------------------------
   // Settings & storage
   // ---------------------------------------------------------------------------
-  const SETTINGS_KEY = "skies.settings.v1";
+  const SETTINGS_KEY = "skies.settings.v2";
+  const OLD_SETTINGS_KEY = "skies.settings.v1"; // pre-WA defaults; only units are carried over
   const CACHE_PREFIX = "skies.wx.v1.";
   const STALE_MS = 10 * 60 * 1000; // refresh data older than 10 minutes
 
   const DEFAULT_LOCATIONS = [
-    { name: "London", admin: "England", country: "United Kingdom", lat: 51.5085, lon: -0.1257 },
-    { name: "New York", admin: "New York", country: "United States", lat: 40.7143, lon: -74.006 },
-    { name: "Sydney", admin: "New South Wales", country: "Australia", lat: -33.8678, lon: 151.2073 },
+    { name: "Dandaragan", admin: "Western Australia", country: "Australia", lat: -30.6833, lon: 115.7 },
+    { name: "Peedamulla", admin: "Western Australia", country: "Australia", lat: -21.845, lon: 115.627 },
+    { name: "Perth", admin: "Western Australia", country: "Australia", lat: -31.9523, lon: 115.8613 },
   ];
 
   const store = {
@@ -32,7 +33,7 @@
   };
 
   function loadSettings() {
-    const s = store.get(SETTINGS_KEY, null);
+    const s = store.get(SETTINGS_KEY, null) ?? { units: store.get(OLD_SETTINGS_KEY, null)?.units };
     const locations = Array.isArray(s?.locations) && s.locations.length === 3 ? s.locations : DEFAULT_LOCATIONS.slice();
     const units = s?.units === "imperial" ? "imperial" : "metric";
     return { locations, units };

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Skies</title>
+  <meta name="description" content="A clean, modern weather app for your three favourite places." />
+  <meta name="theme-color" content="#0e1630" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Skies" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Shared gradients for the weather icons -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="gSun" cx="40%" cy="35%" r="70%">
+        <stop offset="0" stop-color="#fff3b0" />
+        <stop offset="0.55" stop-color="#ffd23f" />
+        <stop offset="1" stop-color="#ff9f1c" />
+      </radialGradient>
+      <linearGradient id="gMoon" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fdfcf0" />
+        <stop offset="1" stop-color="#c9cfe6" />
+      </linearGradient>
+      <linearGradient id="gCloud" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" />
+        <stop offset="1" stop-color="#d5deeb" />
+      </linearGradient>
+      <linearGradient id="gCloudDark" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#d9e0ea" />
+        <stop offset="1" stop-color="#8f9cb0" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div id="bg" class="bg"></div>
+
+  <!-- HOME: the three locations -->
+  <main id="home" class="view view-home" aria-label="Your locations">
+    <header class="home-header">
+      <div>
+        <p class="eyebrow" id="today-label"></p>
+        <h1>Weather</h1>
+      </div>
+      <button class="icon-btn" id="edit-btn" aria-label="Edit locations and settings">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </button>
+    </header>
+    <section id="cards" class="cards"></section>
+    <p class="attribution">Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></p>
+  </main>
+
+  <!-- DETAIL: everything about one location on a single page -->
+  <main id="detail" class="view view-detail" aria-label="Location detail" hidden>
+    <header class="detail-header">
+      <button class="icon-btn" id="back-btn" aria-label="Back to all locations">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <nav class="tabs" id="tabs" aria-label="Switch location"></nav>
+      <button class="icon-btn" id="refresh-btn" aria-label="Refresh">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      </button>
+    </header>
+    <div id="detail-body" class="detail-body"></div>
+  </main>
+
+  <!-- EDITOR: bottom sheet to change locations + units -->
+  <div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
+  <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 id="sheet-title">Your places</h2>
+      <button class="text-btn" id="sheet-done">Done</button>
+    </div>
+    <div id="sheet-slots" class="slots"></div>
+
+    <div id="search-panel" class="search-panel" hidden>
+      <div class="search-row">
+        <input id="search-input" type="search" placeholder="Search a city…" autocomplete="off" enterkeyhint="search" />
+        <button class="text-btn" id="search-cancel">Cancel</button>
+      </div>
+      <button class="geo-btn" id="geo-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3A8.99 8.99 0 0 0 13 3.06V1h-2v2.06A8.99 8.99 0 0 0 3.06 11H1v2h2.06A8.99 8.99 0 0 0 11 20.94V23h2v-2.06A8.99 8.99 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
+        Use my current location
+      </button>
+      <ul id="search-results" class="search-results"></ul>
+    </div>
+
+    <div class="units">
+      <span>Units</span>
+      <div class="segmented" id="units-toggle" role="radiogroup" aria-label="Units">
+        <button role="radio" data-units="metric">°C · km/h · mm</button>
+        <button role="radio" data-units="imperial">°F · mph · in</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
